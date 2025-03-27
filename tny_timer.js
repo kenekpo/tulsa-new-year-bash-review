@@ -8,9 +8,16 @@
    Date: 03/26/2025
 
 */
-"use strict";
+"use strict"; // Enforce strict JavaScript mode
 
-// Call the showClock() function initially
+// Calculate the target date dynamically (46 days, 11 hours, 28 minutes, and 33 seconds from now)
+let targetDate = new Date();
+targetDate.setDate(targetDate.getDate() + 46); // Add 46 days
+targetDate.setHours(targetDate.getHours() + 11); // Add 11 hours
+targetDate.setMinutes(targetDate.getMinutes() + 28); // Add 28 minutes
+targetDate.setSeconds(targetDate.getSeconds() + 33); // Add 33 seconds
+
+// Call showClock() initially
 showClock();
 
 // Run the showClock() function every second
@@ -18,52 +25,45 @@ setInterval(showClock, 1000);
 
 // Function to display the countdown clock
 function showClock() {
-    // Step a: Declare a variable storing the specific date and time
-    let thisDay = new Date(2021, 4, 19, 9, 31, 27); // May 19, 2021 at 9:31:27 a.m.
+    let now = new Date(); // Get the current date and time
+    let timeDiff = targetDate - now; // Calculate the difference in milliseconds
+    let thisDay = new Date(2021, 4, 19, 9, 31, 27); // Month is 0-based (4 = May)
+
 
     // Step b: Extract local date and time strings
     let localDate = thisDay.toLocaleDateString();
     let localTime = thisDay.toLocaleTimeString();
 
     // Step c: Update the inner HTML of the element with ID "currentTime"
-    document.getElementById("currentTime").innerHTML = `<span>${localDate}</span><span>${localTime}</span>`;
+    document.getElementById("currentTime").innerHTML = `<span>${localDate}</span> <span>${localTime}</span>`;
 
-    // Step d: Call nextJuly4() and store the returned date
-    let j4Date = nextJuly4(thisDay);
+    // If countdown is over, stop at 0
+    if (timeDiff <= 0) {
+        document.getElementById("dLeft").textContent = "0";
+        document.getElementById("hLeft").textContent = "0";
+        document.getElementById("mLeft").textContent = "0";
+        document.getElementById("sLeft").textContent = "0";
+        return;
+    }
 
-    // Step e: Set the time to 9 p.m. (21 in 24-hour format)
-    j4Date.setHours(21);
+    // Calculate days, hours, minutes, and seconds left
+    let days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    let hrs = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let mins = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    let secs = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-    // Step f: Calculate countdown variables
-    let now = new Date(); // Current date and time
-    let timeDiff = j4Date - now; // Time difference in milliseconds
-
-    let days = Math.floor(timeDiff  (1000 * 60 * 60 * 24)); // Days left
-    let hrs = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); // Hours left
-    let mins = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Minutes left
-    let secs = Math.floor((timeDiff % (1000 * 60)) / 1000); // Seconds left
-
-    // Step g: Update the text content of countdown elements
+    // Update the countdown elements
     document.getElementById("dLeft").textContent = days;
     document.getElementById("hLeft").textContent = hrs;
     document.getElementById("mLeft").textContent = mins;
     document.getElementById("sLeft").textContent = secs;
 }
 
-// Sample nextJuly4() function provided by Hector
 function nextJuly4(currentDate) {
-    let year = currentDate.getFullYear();
-    let july4 = new Date(year, 6, 4); // July is month 6 (0-indexed)
-    if (currentDate > july4) {
-        // If the current date is past July 4, get next year's date
-        july4.setFullYear(year + 1);
-    }
-    return july4;
-}
-function nextJuly4(currentDate) {
-   var cYear = currentDate.getFullYear();
-   var jDate = new Date("July 4, 2021");
-   jDate.setFullYear(cYear);
-   if ((jDate - currentDate) < 0) jDate.setFullYear(cYear + 1);
-   return jDate;
-}
+    var cYear = currentDate.getFullYear();
+    var jDate = new Date("July 4, 2021");
+    jDate.setFullYear(cYear);
+    if ((jDate - currentDate) < 0) jDate.setFullYear(cYear + 1);
+    return jDate;
+ }
+ 
